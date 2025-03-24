@@ -1,0 +1,38 @@
+{
+    "Item1": {
+      "book_id": { "S": "1" },
+      "name": { "S": "The Midnight Library" },
+      "author": { "S": "Matt Haig" },
+      "price": { "N": "12.99" },
+      "languages": { "L": [{ "S": "English" }, { "S": "Spanish" }, { "S": "French" }] }
+    },
+    "Item2":{
+      "book_id": { "S": "2" },
+      "name": { "S": "Atomic Habits" },
+      "author": { "S": "James Clear" },
+      "price": { "N": "16.99" },
+      "languages": { "L": [{ "S": "English" }, { "S": "German" }, { "S": "Japanese" }] }
+    },
+    "Item3":{
+      "book_id": { "S": "3" },
+      "name": { "S": "Where the Crawdads Sing" },
+      "author": { "S": "Delia Owens" },
+      "price": { "N": "14.49" },
+      "languages": { "L": [{ "S": "English" }, { "S": "Italian" }, { "S": "Portuguese" }] }
+    },
+    "Item4":{
+      "book_id": { "S": "4" },
+      "name": { "S": "The Alchemist" },
+      "author": { "S": "Paulo Coelho" },
+      "price": { "N": "10.99" },
+      "languages": { "L": [{ "S": "English" }, { "S": "Portuguese" }, { "S": "Hindi" }] }
+    },
+    "Item5":{
+      "book_id": { "S": "5" },
+      "name": { "S": "The Psychology of Money" },
+      "author": { "S": "Morgan Housel" },
+      "price": { "N": "18.50" },
+      "languages": { "L": [{ "S": "English" }, { "S": "Chinese" }, { "S": "Korean" }] }
+    }
+}
+  
