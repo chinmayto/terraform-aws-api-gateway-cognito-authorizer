@@ -2,9 +2,9 @@
 # Create an ACM certificate for the domain
 ################################################################################
 resource "aws_acm_certificate" "my_api_cert" {
-  domain_name = "*.chinmayto.com"
-  # subject_alternative_names = ["auth.chinmayto.com", "*.api.chinmayto.com"]
-  validation_method = "DNS"
+  domain_name               = "chinmayto.com"
+  subject_alternative_names = ["auth.chinmayto.com", "api.chinmayto.com"]
+  validation_method         = "DNS"
 }
 
 ################################################################################
@@ -84,22 +84,11 @@ resource "aws_api_gateway_base_path_mapping" "custom_domain_mapping" {
 }
 
 
-
-
-
 # Required for Cognito Custom Domain validation
 resource "aws_route53_record" "root_record" {
   name    = "chinmayto.com"
   type    = "A"
   zone_id = data.aws_route53_zone.my_domain.id
-
-  alias {
-    name                   = "chinmayto.com"
-    zone_id                = "Z2FDTNDATAQYW2"   # CloudFront Zone ID
-    evaluate_target_health = false
-  }
-
-  depends_on = [aws_route53_record.custom_domain_record]
 }
 
 resource "aws_route53_record" "auth-cognito-A" {
@@ -109,8 +98,8 @@ resource "aws_route53_record" "auth-cognito-A" {
   alias {
     evaluate_target_health = false
 
-    name                   = "auth.chinmayto.com"
-    zone_id                = "Z2FDTNDATAQYW2" # CloudFront Zone ID
+    name    = aws_cognito_user_pool_domain.main.cloudfront_distribution_arn
+    zone_id = "Z2FDTNDATAQYW2" # CloudFront Zone ID
   }
 }
 
