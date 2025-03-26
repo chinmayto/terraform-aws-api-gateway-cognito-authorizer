@@ -27,3 +27,20 @@ variable "environment" {
   description = "Environment for deployment"
   default     = "dev"
 }
+
+
+variable "domain_name" {
+  type        = string
+  description = "DNS domain in the AWS account which you own or is linked via NS records to a DNS zone you own."
+  default     = "chinmayto.com"
+}
+
+## API Gateway variables
+
+variable "authorization_scopes" {
+  type        = string
+  description = "Authorization Scope for API Gateway"
+  default     = "myapi/all"
+}
+
+ 

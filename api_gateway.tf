@@ -35,7 +35,7 @@ resource "aws_api_gateway_authorizer" "my_authorizer" {
   name                             = "my_authorizer"
   rest_api_id                      = aws_api_gateway_rest_api.API-gateway.id
   type                             = "COGNITO_USER_POOLS"
-  provider_arns                    = [aws_cognito_user_pool.pool.arn]
+  provider_arns                    = [aws_cognito_user_pool.my_cognito_user_pool.arn]
   authorizer_result_ttl_in_seconds = 0
 }
 
@@ -44,11 +44,12 @@ resource "aws_api_gateway_authorizer" "my_authorizer" {
 ################################################################################
 
 resource "aws_api_gateway_method" "GET_one_method" {
-  rest_api_id   = aws_api_gateway_rest_api.API-gateway.id
-  resource_id   = aws_api_gateway_resource.API-resource-book.id
-  http_method   = "GET"
-  authorization = "COGNITO_USER_POOLS"
-  authorizer_id = aws_api_gateway_authorizer.my_authorizer.id
+  rest_api_id          = aws_api_gateway_rest_api.API-gateway.id
+  resource_id          = aws_api_gateway_resource.API-resource-book.id
+  http_method          = "GET"
+  authorization        = "COGNITO_USER_POOLS"
+  authorizer_id        = aws_api_gateway_authorizer.my_authorizer.id
+  authorization_scopes = ["${var.authorization_scopes}"]
 }
 
 resource "aws_api_gateway_integration" "GET_one_lambda_integration" {
@@ -101,11 +102,12 @@ resource "aws_api_gateway_integration_response" "GET_one_integration_response_20
 ################################################################################
 
 resource "aws_api_gateway_method" "GET_all_method" {
-  rest_api_id   = aws_api_gateway_rest_api.API-gateway.id
-  resource_id   = aws_api_gateway_resource.API-resource-books.id
-  http_method   = "GET"
-  authorization = "COGNITO_USER_POOLS"
-  authorizer_id = aws_api_gateway_authorizer.my_authorizer.id
+  rest_api_id          = aws_api_gateway_rest_api.API-gateway.id
+  resource_id          = aws_api_gateway_resource.API-resource-books.id
+  http_method          = "GET"
+  authorization        = "COGNITO_USER_POOLS"
+  authorizer_id        = aws_api_gateway_authorizer.my_authorizer.id
+  authorization_scopes = ["${var.authorization_scopes}"]
 }
 
 resource "aws_api_gateway_integration" "GET_all_lambda_integration" {
@@ -158,11 +160,12 @@ resource "aws_api_gateway_integration_response" "GET_all_integration_response_20
 ################################################################################
 
 resource "aws_api_gateway_method" "POST_method" {
-  rest_api_id   = aws_api_gateway_rest_api.API-gateway.id
-  resource_id   = aws_api_gateway_resource.API-resource-book.id
-  http_method   = "POST"
-  authorization = "COGNITO_USER_POOLS"
-  authorizer_id = aws_api_gateway_authorizer.my_authorizer.id
+  rest_api_id          = aws_api_gateway_rest_api.API-gateway.id
+  resource_id          = aws_api_gateway_resource.API-resource-book.id
+  http_method          = "POST"
+  authorization        = "COGNITO_USER_POOLS"
+  authorizer_id        = aws_api_gateway_authorizer.my_authorizer.id
+  authorization_scopes = ["${var.authorization_scopes}"]
 }
 
 resource "aws_api_gateway_integration" "POST_lambda_integration" {
@@ -215,11 +218,12 @@ resource "aws_api_gateway_integration_response" "POST_integration_response_200" 
 ################################################################################
 
 resource "aws_api_gateway_method" "PATCH_method" {
-  rest_api_id   = aws_api_gateway_rest_api.API-gateway.id
-  resource_id   = aws_api_gateway_resource.API-resource-book.id
-  http_method   = "PATCH"
-  authorization = "COGNITO_USER_POOLS"
-  authorizer_id = aws_api_gateway_authorizer.my_authorizer.id
+  rest_api_id          = aws_api_gateway_rest_api.API-gateway.id
+  resource_id          = aws_api_gateway_resource.API-resource-book.id
+  http_method          = "PATCH"
+  authorization        = "COGNITO_USER_POOLS"
+  authorizer_id        = aws_api_gateway_authorizer.my_authorizer.id
+  authorization_scopes = ["${var.authorization_scopes}"]
 }
 
 resource "aws_api_gateway_integration" "PATCH_lambda_integration" {
@@ -265,11 +269,12 @@ resource "aws_api_gateway_integration_response" "PATCH_integration_response_200"
 ################################################################################
 
 resource "aws_api_gateway_method" "DELETE_method" {
-  rest_api_id   = aws_api_gateway_rest_api.API-gateway.id
-  resource_id   = aws_api_gateway_resource.API-resource-book.id
-  http_method   = "DELETE"
-  authorization = "COGNITO_USER_POOLS"
-  authorizer_id = aws_api_gateway_authorizer.my_authorizer.id
+  rest_api_id          = aws_api_gateway_rest_api.API-gateway.id
+  resource_id          = aws_api_gateway_resource.API-resource-book.id
+  http_method          = "DELETE"
+  authorization        = "COGNITO_USER_POOLS"
+  authorizer_id        = aws_api_gateway_authorizer.my_authorizer.id
+  authorization_scopes = ["${var.authorization_scopes}"]
 }
 
 resource "aws_api_gateway_integration" "DELETE_lambda_integration" {
@@ -399,4 +404,28 @@ resource "aws_api_gateway_method_settings" "method_settings" {
 resource "aws_cloudwatch_log_group" "api_gateway_execution_logs" {
   name              = "API-Gateway-Execution-Logs_${aws_api_gateway_rest_api.API-gateway.id}/prod"
   retention_in_days = 7
+}
+
+################################################################################
+# Create a domain name for the API Gateway endpoint
+################################################################################
+resource "aws_api_gateway_domain_name" "custom_domain" {
+
+  depends_on = [aws_acm_certificate_validation.cert_validation]
+
+  domain_name              = "api.${var.domain_name}"
+  regional_certificate_arn = aws_acm_certificate.my_api_cert.arn
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
+}
+
+################################################################################
+# Create a base path mapping for the domain
+################################################################################
+resource "aws_api_gateway_base_path_mapping" "custom_domain_mapping" {
+  domain_name = aws_api_gateway_domain_name.custom_domain.domain_name
+  api_id      = aws_api_gateway_rest_api.API-gateway.id
+  stage_name  = aws_api_gateway_stage.my-prod-stage.stage_name
 }

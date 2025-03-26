@@ -1,17 +1,8 @@
 ################################################################################
-# Create an ACM certificate for the domain
-################################################################################
-resource "aws_acm_certificate" "my_api_cert" {
-  domain_name               = "chinmayto.com"
-  subject_alternative_names = ["auth.chinmayto.com", "api.chinmayto.com"]
-  validation_method         = "DNS"
-}
-
-################################################################################
 # Get the hosted zone ID for the domain
 ################################################################################
 data "aws_route53_zone" "my_domain" {
-  name         = "chinmayto.com"
+  name         = var.domain_name
   private_zone = false
 }
 
@@ -49,56 +40,26 @@ resource "aws_route53_record" "cert_validation_record" {
 }
 
 ################################################################################
-# Validate the certificate
-################################################################################
-resource "aws_acm_certificate_validation" "cert_validation" {
-  timeouts {
-    create = "5m"
-  }
-  certificate_arn         = aws_acm_certificate.my_api_cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.cert_validation_record : record.fqdn]
-}
-
-################################################################################
-# Create a domain name for the API Gateway endpoint
-################################################################################
-resource "aws_api_gateway_domain_name" "custom_domain" {
-
-  depends_on = [aws_acm_certificate_validation.cert_validation]
-
-  domain_name              = "api.chinmayto.com"
-  regional_certificate_arn = aws_acm_certificate.my_api_cert.arn
-
-  endpoint_configuration {
-    types = ["REGIONAL"]
-  }
-}
-
-################################################################################
-# Create a base path mapping for the domain
-################################################################################
-resource "aws_api_gateway_base_path_mapping" "custom_domain_mapping" {
-  domain_name = aws_api_gateway_domain_name.custom_domain.domain_name
-  api_id      = aws_api_gateway_rest_api.API-gateway.id
-  stage_name  = aws_api_gateway_stage.my-prod-stage.stage_name
-}
-
-
+# Create a record for the domain name
 # Required for Cognito Custom Domain validation
+################################################################################
 resource "aws_route53_record" "root_record" {
-  name    = "chinmayto.com"
+  name    = var.domain_name
   type    = "A"
   zone_id = data.aws_route53_zone.my_domain.id
+
+  records         = ["8.8.8.8"] #This can be any dummy IP address
+  allow_overwrite = true
 }
 
 resource "aws_route53_record" "auth-cognito-A" {
-  name    = "auth.chinmayto.com"
+  name    = "auth.${var.domain_name}"
   type    = "A"
   zone_id = data.aws_route53_zone.my_domain.zone_id
   alias {
     evaluate_target_health = false
 
-    name    = aws_cognito_user_pool_domain.main.cloudfront_distribution_arn
+    name    = aws_cognito_user_pool_domain.user_pool_domain.cloudfront_distribution_arn
     zone_id = "Z2FDTNDATAQYW2" # CloudFront Zone ID
   }
 }
