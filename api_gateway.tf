@@ -29,7 +29,7 @@ resource "aws_api_gateway_resource" "API-resource-books" {
 }
 
 ################################################################################
-# Lambda Authorizer
+# Cognito Authorizer
 ################################################################################
 resource "aws_api_gateway_authorizer" "my_authorizer" {
   name                             = "my_authorizer"

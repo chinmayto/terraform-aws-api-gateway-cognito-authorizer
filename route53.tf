@@ -10,7 +10,7 @@ data "aws_route53_zone" "my_domain" {
 # Create a CNAME record for the API Gateway endpoint
 ################################################################################
 resource "aws_route53_record" "custom_domain_record" {
-  name = "api" # The subdomain (api.sumeet.life)
+  name = "api" # The subdomain (api.chinmayto.com)
   type = "CNAME"
   ttl  = "300" # TTL in seconds
 
