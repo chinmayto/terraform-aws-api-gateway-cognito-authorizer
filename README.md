@@ -2,7 +2,7 @@
 
 ### Introduction
 
-In our previous post, we explored securing API Gateway using a Lambda Authorizer with JWT tokens via Terraform.
+In our [previous post](https://dev.to/aws-builders/securing-api-gateway-with-lambda-authorizer-using-jwt-tokens-aop), we explored securing API Gateway using a Lambda Authorizer with JWT tokens via Terraform.
 
 Lambda Authorizer with JWT Token provides fine-grained access control by enabling custom logic, supports multiple identity providers, and allows additional validation before granting access. However, it introduces increased request latency due to execution time, requires additional infrastructure and maintenance, and can lead to higher AWS costs from Lambda invocation fees.
 
@@ -89,9 +89,9 @@ resource "aws_acm_certificate_validation" "cert_validation" {
 ```
 ### Step 3: Create Domain Name for API Gateway Endpoint
 
-Next, we configure API Gateway with a custom domain.
+Next, we configure API Gateway with a custom domain `api.chinmayto.com`.
 
-Create API Gateway Domain Name: Define a custom domain api.chinmayto.com for API Gateway.
+Create API Gateway Domain Name: Define a custom domain `api.chinmayto.com` for API Gateway.
 ```terraform
 ################################################################################
 # Create a domain name for the API Gateway endpoint
@@ -121,7 +121,7 @@ resource "aws_api_gateway_base_path_mapping" "custom_domain_mapping" {
 }
 ```
 
-Create CNAME Record in Route 53: Map api.chinmayto.com to the API Gateway CloudFront distribution.
+Create CNAME Record in Route 53: Map `api.chinmayto.com` to the API Gateway distribution.
 ```terraform
 ################################################################################
 # Create a CNAME record for the API Gateway endpoint
@@ -157,7 +157,7 @@ resource "aws_api_gateway_authorizer" "my_authorizer" {
 
 Modify API Gateway methods to enforce authentication via Cognito User Pools.
 
-Update Authorization to COGNITO_USER_POOLS and update Authorization Scope. Example API gateway method definition below:
+Update Authorization to `COGNITO_USER_POOLS` and update Authorization Scope as `myapi/all`. Example API gateway method definition below:
 ```terraform
 ################################################################################
 ## GET /book/{bookId}
@@ -177,7 +177,7 @@ resource "aws_api_gateway_method" "GET_one_method" {
 
 Set up AWS Cognito for user authentication and token generation.
 
-Create Cognito User Pool: Define a user pool for authentication.
+Create Cognito User Pool: Define a user pool
 ```terraform
 ################################################################################
 # AWS Cognito User Pool
@@ -288,5 +288,9 @@ terraform destroy -auto-approve
 
 ### Conclusion
 
+Using AWS Cognito with API Gateway provides a scalable and managed way to secure APIs with OAuth 2.0 authentication. Unlike Lambda Authorizers, Cognito improves performance, reduces cost, and integrates seamlessly with other AWS services. By implementing custom domains, we enhance security and branding for authentication and API endpoints.
+
 ### References
 1. GitHub Repo: https://github.com/chinmayto/terraform-aws-api-gateway-cognito-authorizer
+2. AWS Blog: https://aws.amazon.com/blogs/security/how-to-use-oauth-2-0-in-amazon-cognito-learn-about-the-different-oauth-2-0-grants/
+3. OAuth 2.0 Grants: https://docs.aws.amazon.com/cognito/latest/developerguide/federation-endpoints-oauth-grants.html
