@@ -319,6 +319,9 @@ Use the token to call API Gateway using custom domain endpoint:
 
 ![alt text](/images/user_token.png)
 
+Token encoded in jwt.io
+
+![alt text](/images/token_details.png)
 
 ### Cleanup
 Remember to stop AWS components to avoid large bills.
