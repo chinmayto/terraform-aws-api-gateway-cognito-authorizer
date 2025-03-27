@@ -33,7 +33,7 @@ Follwing is the serverless architecture we will be dealing with.
 
 ### Step 1: Create API Gateway, DynamoDB Table, and Lambda Function
 
-Refer to our previous post for setting up API Gateway, DynamoDB, and Lambda using Terraform.
+Refer to our [previous post](https://dev.to/aws-builders/securing-api-gateway-with-lambda-authorizer-using-jwt-tokens-aop) for setting up API Gateway, DynamoDB, and Lambda using Terraform.
 
 ### Step 2: Create ACM Certificate and Validate Against Custom Domains
 
@@ -202,7 +202,7 @@ resource "aws_cognito_user_pool_domain" "user_pool_domain" {
 ```
 
 Create User Pool Client for Client Credentials Grant: Register an OAuth 2.0 client with the user pool.
-```
+```terraform
 ################################################################################
 # Create a user pool client
 ################################################################################
@@ -279,6 +279,46 @@ Apply complete! Resources: 56 added, 0 changed, 0 destroyed.
 
 ### Testing
 
+API Authoriser as Cognito User Pool:
+
+![alt text](/images/api_cognito_authorizer.png)
+
+API Gateway Custom Domain with stage mapping:
+
+![alt text](/images/api_gateway_custom_domain.png)
+
+Cognito User Pool:
+
+![alt text](/images/cognito_user_pool.png)
+
+Cogntio Custom Auth Domain with resource servers having same scope defined:
+
+![alt text](/images/cognito_custom_auth_domain.png)
+
+Cognito App Client having defined authentication flows:
+
+![alt text](/images/cognito_app_client.png)
+
+Cognito App Client login pages with OAuth 2.0 `client_credentials` grant:
+
+![alt text](/images/cognito_ouath2_grant.png)
+
+Route53 CNAME and A records (required for DNS validation, API endpoint custom domain and Cognito auth custom domain):
+
+![alt text](/images/route53_cname.png)
+
+![alt text](/images/route53_a.png)
+
+Get token using `client_id` and `client_secret` from Cognito Auth Endpoint on postman:
+
+![alt text](/images/get_token.png)
+
+![alt text](/images/get_token_success.png)
+
+Use the token to call API Gateway using custom domain endpoint:
+
+![alt text](/images/user_token.png)
+
 
 ### Cleanup
 Remember to stop AWS components to avoid large bills.
@@ -294,3 +334,4 @@ Using AWS Cognito with API Gateway provides a scalable and managed way to secure
 1. GitHub Repo: https://github.com/chinmayto/terraform-aws-api-gateway-cognito-authorizer
 2. AWS Blog: https://aws.amazon.com/blogs/security/how-to-use-oauth-2-0-in-amazon-cognito-learn-about-the-different-oauth-2-0-grants/
 3. OAuth 2.0 Grants: https://docs.aws.amazon.com/cognito/latest/developerguide/federation-endpoints-oauth-grants.html
+4. YouTube blog by Ravi: https://www.youtube.com/@raaviblog105

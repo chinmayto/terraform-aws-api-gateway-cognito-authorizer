@@ -47,6 +47,7 @@ resource "aws_route53_record" "root_record" {
   name    = var.domain_name
   type    = "A"
   zone_id = data.aws_route53_zone.my_domain.id
+  ttl     = "300"
 
   records         = ["8.8.8.8"] #This can be any dummy IP address
   allow_overwrite = true
@@ -56,6 +57,7 @@ resource "aws_route53_record" "auth-cognito-A" {
   name    = "auth.${var.domain_name}"
   type    = "A"
   zone_id = data.aws_route53_zone.my_domain.zone_id
+
   alias {
     evaluate_target_health = false
 
